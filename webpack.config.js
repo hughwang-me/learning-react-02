@@ -10,7 +10,23 @@ const config = {
       path: path.resolve(__dirname , 'dist'),
       filename: 'js/bundle-[name]-[chunkhash].js'
     },
-
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          include: path.resolve(__dirname , 'src'),
+          exclude: path.resolve(__dirname , 'node_modules'),
+          loader: "babel-loader",
+          query: {
+            presets: ['react' , 'env']
+          }
+        },
+        {
+          test: /\.css$/,
+          loader: 'style-loader!css-loader'
+        }
+      ]
+    },
     plugins: [
       new HtmlWebpackPlugin({
         time: new Date(),
