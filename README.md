@@ -1,5 +1,5 @@
 # learning-react-02
-新闻网站
+
 
 ## 配置环境
 
@@ -64,11 +64,11 @@ module.exports = config;
 ```
 ### 安装编译工具 babel 和 react 依赖 已经 css 加载支持
 ##### 第一步 安装依赖
-> npm install --save-dev babel-loader babel-core
-> npm install --save-dev babel-cli babel-preset-react
-> npm install --save-dev babel-preset-env
-> npm install --save-dev babelify
-> npm install --save react react-dom
+> npm install --save-dev babel-loader babel-core <br>
+> npm install --save-dev babel-cli babel-preset-react <br>
+> npm install --save-dev babel-preset-env <br>
+> npm install --save-dev babelify <br>
+> npm install --save react react-dom <br>
 > npm install --save-dev css-loader style-loader
 
 ##### 第 2 步 配置 webpack
