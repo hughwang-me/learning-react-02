@@ -62,13 +62,14 @@ const config = {
 
 module.exports = config;
 ```
-### 安装编译工具 babel 和 react 依赖
+### 安装编译工具 babel 和 react 依赖 已经 css 加载支持
 ##### 第一步 安装依赖
 > npm install --save-dev babel-loader babel-core
-npm install --save-dev babel-cli babel-preset-react
-npm install --save-dev babel-preset-env
-npm install --save-dev babelify
-npm install --save react react-dom
+> npm install --save-dev babel-cli babel-preset-react
+> npm install --save-dev babel-preset-env
+> npm install --save-dev babelify
+> npm install --save react react-dom
+> npm install --save-dev css-loader style-loader
 
 ##### 第 2 步 配置 webpack
 ```
