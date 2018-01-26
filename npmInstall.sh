@@ -7,3 +7,6 @@ npm install --save-dev babel-cli babel-preset-react
 npm install --save-dev babel-preset-env
 npm install --save-dev babelify
 npm install --save-dev css-loader style-loader
+npm install --save react-router
+npm install --save antd
+npm install --save-dev babel-plugin-import 

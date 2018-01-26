@@ -1,10 +1,11 @@
 const path = require('path');
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 const config = {
 
-    entry: './src/js/index.js',
+    entry: './src/js/root.js',
 
     output: {
       path: path.resolve(__dirname , 'dist'),
@@ -28,12 +29,16 @@ const config = {
       ]
     },
     plugins: [
+      new webpack.optimize.UglifyJsPlugin(),
       new HtmlWebpackPlugin({
         time: new Date(),
         filename: 'index.html',
         template: 'index.html'
       })
-    ]
+    ],
+    devServer: {
+      port: 8090
+    }
 
 };
 
