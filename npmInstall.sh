@@ -9,4 +9,6 @@ npm install --save-dev babelify
 npm install --save-dev css-loader style-loader
 npm install --save react-router
 npm install --save antd
-npm install --save-dev babel-plugin-import 
+npm install --save-dev babel-plugin-import
+npm install --save react-responsive
+npm install --save whatwg-fetch 
