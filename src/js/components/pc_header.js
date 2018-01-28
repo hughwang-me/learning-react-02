@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 
 import {Row, Col} from 'antd';
 import {Menu, Icon} from 'antd';
-import { Tabs } from 'antd';
+import {Tabs} from 'antd';
+
 const TabPane = Tabs.TabPane;
 
 const SubMenu = Menu.SubMenu;
@@ -13,6 +14,8 @@ import {Modal, Button} from 'antd';
 import {Form, Input, Checkbox} from 'antd';
 
 const FormItem = Form.Item;
+
+const confirm = Modal.confirm;
 
 class PcHeader extends React.Component {
 
@@ -35,14 +38,44 @@ class PcHeader extends React.Component {
             console.log('click login');
             this.showLoginModal();
         } else {
-            console.log('click other');
+            console.log('click 退出');
+            this.showLogoutConfirm();
         }
+    }
+
+     showLogoutConfirm() {
+
+        confirm({
+            title: '你确定要退出吗?',
+            content: '将会清空登录信息',
+            okText: '退出登录',
+            okType: 'danger',
+            cancelText: '取消',
+            onOk:() => {
+                console.log('确认退出');
+                localStorage.UserId = '';
+                localStorage.NickUserName = '';
+                this.setState({
+                    isLogin: false
+                });
+            },
+            onCancel: ()=>{
+                console.log('取消退出');
+
+            },
+        });
     }
 
     showLoginModal(e) {
         console.log(e);
         this.setState({
             loginModalVisible: true,
+        });
+    }
+
+    dismissLoginModal() {
+        this.setState({
+            loginModalVisible: false,
         });
     }
 
@@ -60,8 +93,8 @@ class PcHeader extends React.Component {
         });
     }
 
-    handleLoginTabChanged(e){
-        console.log('[handleLoginTabChanged]',e);
+    handleLoginTabChanged(e) {
+        console.log('[handleLoginTabChanged]', e);
     }
 
     componentDidMount() {
@@ -70,7 +103,7 @@ class PcHeader extends React.Component {
     }
 
     handleLoginSubmit(e) {
-        console.log('开始登录', e);
+        console.log('handleLoginSubmit', e);
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             console.log('开始登录 err ', err);
@@ -78,34 +111,81 @@ class PcHeader extends React.Component {
                 console.log('Received values of form: ', values);
             }
         });
-        console.log('表单数据 用户名: ', this.props.form.getFieldValue('userName'));
-        console.log('表单数据 密码: ', this.props.form.getFieldValue('password'));
+        var formData = this.props.form.getFieldsValue();
+        console.log('表单数据 用户名: ', formData.l_username);
+        console.log('表单数据 密码: ', formData.l_password);
 
-        let url = 'http://newsapi.gugujiankong.com/Handler.ashx?action=login&';
-        let data = {
-            'u_name': 'a',
-            'u_pwd':'1'
+        let url = 'http://newsapi.gugujiankong.com/Handler.ashx?action=login' +
+            '&username=' + formData.l_username +
+            '&password=' + formData.l_password;
+        var fetchOptions = {
+            method: 'GET',
+            mode: 'cors'
         };
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then((response) => response.json())
+        fetch(url, fetchOptions)
+            .then((response) => response.json())
             .then((json) => {
                 console.log('json ', json);
+                if(json){
+                    this.dismissLoginModal();
+                    console.log('登录成功:' , json);
+                    localStorage.UserId = json.UserId;
+                    localStorage.NickUserName = json.NickUserName;
+                    this.setState({
+                        isLogin : true
+                    });
+                }else {
+                    this.dismissLoginModal();
+                    console.log('登录失败:' , json);
+                }
             }).catch(function (error) {
-            console.log('err : ' , error);
+            console.log('err : ', error);
         });
 
     }
 
-    render() {
-        const {getFieldDecorator} = this.props.form;
+    handleRegisterSubmit(e) {
+        e.preventDefault();
+        console.log('[handleRegisterSubmit]', e);
+        var formData = this.props.form.getFieldsValue();
+        console.log('formData : ', formData);
 
-        const userRegion = this.state.isLogin ?
-            <Menu.Item key="login">
+        console.log('r_username : ', this.props.form.getFieldValue('r_username'));
+        console.log('r_password : ', this.props.form.getFieldValue('r_password'));
+        console.log('r_rpassword : ', this.props.form.getFieldValue('r_rpassword'));
+
+        let url = 'http://newsapi.gugujiankong.com/Handler.ashx?action=register' +
+            '&r_userName=' + formData.r_userName +
+            '&r_password=' + formData.r_password +
+            '&r_confirmPassword' + formData.r_password;
+        var fetchOptions = {
+            method: 'GET',
+            mode: 'cors'
+        };
+        fetch(url, fetchOptions)
+            .then((response) => response.json())
+            .then((json) => {
+                console.log('json ', json);
+                if(json){
+                    this.dismissLoginModal();
+                    console.log('注册成功:' , json);
+                }else {
+                    this.dismissLoginModal();
+                    console.log('注册失败:' , json);
+                }
+            }).catch(function (error) {
+            console.log('err : ', error);
+        });
+    }
+
+    render() {
+        let {getFieldDecorator} = this.props.form;
+
+        console.log('localStorage.UserId : ' , localStorage.UserId);
+        console.log('localStorage.NickUserName : ' , localStorage.NickUserName);
+
+        const userRegion = !(localStorage.UserId === '') ?
+            <Menu.Item key="logout">
                 个人中心 退出
             </Menu.Item>
             :
@@ -160,39 +240,59 @@ class PcHeader extends React.Component {
                     onCancel={this.handleLoginModalCanel.bind(this)}
                 >
                     <Tabs defaultActiveKey="1" onChange={this.handleLoginTabChanged.bind(this)}>
-                        <TabPane tab="Tab 1" key="1">Content of Tab Pane 1</TabPane>
-                        <TabPane tab="Tab 2" key="2">Content of Tab Pane 2</TabPane>
-                        <TabPane tab="Tab 3" key="3">Content of Tab Pane 3</TabPane>
+                        <TabPane tab="登录" key="1">
+                            <Form onSubmit={this.handleLoginSubmit.bind(this)} className="login-form">
+                                <FormItem>
+                                    {getFieldDecorator('l_username', {
+                                        rules: [{required: true, message: 'Please input your username!'}],
+                                    })(
+                                        <Input prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                               placeholder="用户名"/>
+                                    )}
+                                </FormItem>
+                                <FormItem>
+                                    {getFieldDecorator('l_password', {
+                                        rules: [{required: true, message: 'Please input your Password!'}],
+                                    })(
+                                        <Input
+                                            prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                            type="password" placeholder="密码"/>
+                                    )}
+                                </FormItem>
+                                <FormItem>
+                                    <Checkbox>记住登录状态</Checkbox>
+                                    <a id="login-form-forgot" href="">忘记密码</a>
+                                    <Button type="primary" htmlType="submit" className="login-form-button">
+                                        登录
+                                    </Button>
+                                </FormItem>
+                            </Form>
+                        </TabPane>
+                        <TabPane tab="注册" key="2">
+                            <Form onSubmit={this.handleRegisterSubmit.bind(this)} className="login-form">
+                                <FormItem>
+                                    {getFieldDecorator('r_username')(
+                                        <Input placeholder="用户名"/>
+                                    )}
+                                </FormItem>
+                                <FormItem>
+                                    {getFieldDecorator('r_password')(
+                                        <Input placeholder="密码"/>
+                                    )}
+                                </FormItem>
+                                <FormItem>
+                                    {getFieldDecorator('r_rpassword')(
+                                        <Input placeholder="重复密码"/>
+                                    )}
+                                </FormItem>
+                                <FormItem>
+                                    <Button type="primary" htmlType="submit" className="login-form-button">
+                                        注册
+                                    </Button>
+                                </FormItem>
+                            </Form>
+                        </TabPane>
                     </Tabs>
-
-
-                    <Form onSubmit={this.handleLoginSubmit.bind(this)} className="login-form">
-                        <FormItem>
-                            {getFieldDecorator('userName', {
-                                rules: [{required: true, message: 'Please input your username!'}],
-                            })(
-                                <Input prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
-                                       placeholder="Username"/>
-                            )}
-                        </FormItem>
-                        <FormItem>
-                            {getFieldDecorator('password', {
-                                rules: [{required: true, message: 'Please input your Password!'}],
-                            })(
-                                <Input
-                                    prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
-                                    type="password" placeholder="Password"/>
-                            )}
-                        </FormItem>
-                        <FormItem>
-                            <Checkbox>记住登录状态</Checkbox>
-                            <a id="login-form-forgot" href="">忘记密码</a>
-                            <Button type="primary" htmlType="submit" className="login-form-button">
-                                登录
-                            </Button>
-                        </FormItem>
-                    </Form>
-
                 </Modal>
 
             </div>
