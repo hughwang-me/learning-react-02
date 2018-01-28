@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 import {Row, Col} from 'antd';
 import {Menu, Icon} from 'antd';
+import { Tabs } from 'antd';
+const TabPane = Tabs.TabPane;
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
@@ -58,6 +60,10 @@ class PcHeader extends React.Component {
         });
     }
 
+    handleLoginTabChanged(e){
+        console.log('[handleLoginTabChanged]',e);
+    }
+
     componentDidMount() {
         // To disabled submit button at the beginning.
         // this.props.form.validateFields();
@@ -75,12 +81,10 @@ class PcHeader extends React.Component {
         console.log('表单数据 用户名: ', this.props.form.getFieldValue('userName'));
         console.log('表单数据 密码: ', this.props.form.getFieldValue('password'));
 
-        let url = 'http://hb.keruis.com:8080/KeruisCloudAPI/user/login';
+        let url = 'http://newsapi.gugujiankong.com/Handler.ashx?action=login&';
         let data = {
             'u_name': 'a',
-            'u_pwd':'1',
-            'versions':'1.0',
-            'tag':'0'
+            'u_pwd':'1'
         };
         fetch(url, {
             method: 'POST',
@@ -155,6 +159,13 @@ class PcHeader extends React.Component {
                     onOk={this.handleLoginModalOk.bind(this)}
                     onCancel={this.handleLoginModalCanel.bind(this)}
                 >
+                    <Tabs defaultActiveKey="1" onChange={this.handleLoginTabChanged.bind(this)}>
+                        <TabPane tab="Tab 1" key="1">Content of Tab Pane 1</TabPane>
+                        <TabPane tab="Tab 2" key="2">Content of Tab Pane 2</TabPane>
+                        <TabPane tab="Tab 3" key="3">Content of Tab Pane 3</TabPane>
+                    </Tabs>
+
+
                     <Form onSubmit={this.handleLoginSubmit.bind(this)} className="login-form">
                         <FormItem>
                             {getFieldDecorator('userName', {
